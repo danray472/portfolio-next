@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import emailjs from "@emailjs/browser";
 import { Toaster, toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -29,43 +28,39 @@ export default function Form() {
     reset,
   } = useForm();
 
-  const sendEmail = (params) => {
+  const onSubmit = async (data) => {
     const toastId = toast.loading("Sending your message, please wait...");
-
-    emailjs
-      .send(
-        "service_vy4m49c",
-        "template_2uu0c48",
-        params,
-        "Q5bvUKD9JTlDqXtB9"
-      )
-      .then(
-        () => {
-          toast.success(
-            "I have received your message, I will get back to you soon!",
-            { id: toastId }
-          );
-          reset();
-        },
-        (error) => {
-          toast.error(
-            "There was an error sending your message, please try again later!",
-            { id: toastId }
-          );
-          console.error("EmailJS Error:", error.text);
+    
+    try {
+      const response = await fetch("https://getform.io/f/amdknreb", {
+        method: "POST",
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          message: data.message,
+          _gotcha: "" // Honeypot field
+        }),
+        headers: {
+          "Content-Type": "application/json"
         }
+      });
+
+      if (response.ok) {
+        toast.success(
+          "I have received your message, I will get back to you soon!",
+          { id: toastId }
+        );
+        reset();
+      } else {
+        throw new Error("Form submission failed");
+      }
+    } catch (error) {
+      toast.error(
+        "There was an error sending your message, please try again later!",
+        { id: toastId }
       );
-  };
-
-  const onSubmit = (data) => {
-    const templateParams = {
-      to_name: "Dancan",
-      from_name: data.name,
-      reply_to: data.email,
-      message: data.message,
-    };
-
-    sendEmail(templateParams);
+      console.error("Form submission error:", error);
+    }
   };
 
   return (
@@ -114,15 +109,7 @@ export default function Form() {
           variants={item}
           placeholder="message"
           {...register("message", {
-            required: "This field is required!",
-            maxLength: {
-              value: 500,
-              message: "Message should be less than 500 characters",
-            },
-            minLength: {
-              value: 50,
-              message: "Message should be more than 50 characters",
-            },
+            required: "This field is required!"
           })}
           className="w-full p-2 rounded-md shadow-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50 custom-bg"
         />

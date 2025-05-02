@@ -32,7 +32,7 @@ export default function Home() {
       <div className="relative w-full min-h-[70vh] flex flex-col items-center justify-end">
   <div className="flex flex-col items-center text-center mb-10"> {/* Added margin-bottom */}
     <h1 className="font-bold text-6xl xs:text-7xl sm:text-8xl lg:text-9xl text-accent">
-      realTek
+      Code Wizard
     </h1>
     <p className="font-light text-foreground text-lg">
       Meet the wizard behind this portfolio
